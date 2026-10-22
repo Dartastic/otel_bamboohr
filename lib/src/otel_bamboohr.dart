@@ -1,15 +1,16 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_bamboohr_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_bamboohr';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 class BamboohrResult {
+  /// Creates a result.
   const BamboohrResult({
     this.itemCount,
     this.reportId,
@@ -55,8 +56,13 @@ class BamboohrResult {
   final int? statusCode;
 }
 
+/// What a traced call returned: the value for the caller plus fields
+/// recorded on the span.
 class BamboohrCallResult<T> {
+  /// Creates a call result.
   const BamboohrCallResult({required this.value, this.result});
+
+  /// The value returned to the caller.
   final T value;
   final BamboohrResult? result;
 }
@@ -88,68 +94,68 @@ Future<T> tracedBamboohr<T>({
   final span = _tracer().startSpan(
     'bamboohr $operation',
     kind: SpanKind.client,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final r = await invoke();
     if (r.result != null) {
       final extras = <Attribute<Object>>[];
       if (r.result!.itemCount != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'bamboohr.item_count',
           r.result!.itemCount!,
         ));
       }
       if (r.result!.reportId != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'bamboohr.report.id',
           r.result!.reportId!,
         ));
       }
       if (r.result!.reportFormat != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'bamboohr.report.format',
           r.result!.reportFormat!,
         ));
       }
       if (r.result!.fieldsRequested != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'bamboohr.fields_requested',
           r.result!.fieldsRequested!,
         ));
       }
       if (r.result!.timeOffType != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'bamboohr.time_off.type',
           r.result!.timeOffType!,
         ));
       }
       if (r.result!.timeOffStatus != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'bamboohr.time_off.status',
           r.result!.timeOffStatus!,
         ));
       }
       if (r.result!.timeOffHours != null) {
-        extras.add(OTel.attributeDouble(
+        extras.add(OTelAPI.attributeDouble(
           'bamboohr.time_off.hours',
           r.result!.timeOffHours!,
         ));
       }
       if (r.result!.employeeStatus != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'bamboohr.employee.status',
           r.result!.employeeStatus!,
         ));
       }
       if (r.result!.requestId != null) {
-        extras.add(OTel.attributeString(
+        extras.add(OTelAPI.attributeString(
           'bamboohr.request.id',
           r.result!.requestId!,
         ));
       }
       if (r.result!.statusCode != null) {
-        extras.add(OTel.attributeInt(
+        extras.add(OTelAPI.attributeInt(
           'http.response.status_code',
           r.result!.statusCode!,
         ));
@@ -160,13 +166,13 @@ Future<T> tracedBamboohr<T>({
           );
         }
       }
-      if (extras.isNotEmpty) span.addAttributes(OTel.attributes(extras));
+      if (extras.isNotEmpty) span.addAttributes(OTelAPI.attributes(extras));
     }
     return r.value;
   } catch (e, st) {
-    span.addAttributes(OTel.attributes([
-      OTel.attributeString(
-        ErrorResource.errorType.key,
+    span.addAttributes(OTelAPI.attributes([
+      OTelAPI.attributeString(
+        ErrorAttributes.errorType.key,
         e.runtimeType.toString(),
       ),
     ]));
