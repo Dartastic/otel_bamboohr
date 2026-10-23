@@ -2,7 +2,7 @@ name: otel_bamboohr
 description: >-
   OpenTelemetry instrumentation for bamboohr by Dartastic.io. Adds standard
   OpenTelemetry observability to applications that use bamboohr.
-version: 0.1.0-wip
+version: 0.1.0
 repository: https://github.com/dartastic/otel_bamboohr
 homepage: https://dartastic.io
 
